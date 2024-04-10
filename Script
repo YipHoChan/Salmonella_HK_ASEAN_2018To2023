@@ -1,0 +1,42 @@
+#Call serovars (Using CISTR_cmd)
+
+nano run_sistr.sh
+
+#!/bin/bash
+
+# Specify the input directory and output directory
+input_dir="/Users/Yehao/PolyU_DryLab/ASEAN/20240123Genomes"
+output_dir="/Users/Yehao/PolyU_DryLab/ASEAN/20240123/SISTR_output/"
+
+# Loop through each .fna file in the input directory
+for file in "${input_dir}"/*.fna; do
+    # Extract the filename without the path and extension
+    filename=$(basename -- "$file")
+    filename_no_ext="${filename%.*}"
+
+    # Run the sistr command with two items for -i
+    sistr -i "${file}" "${filename}" -f csv -o "${output_dir}${filename_no_ext}_output.csv"
+done
+
+
+chmod +x run_sistr.sh
+
+./run_sistr.sh
+
+cat SISTR_output/*.csv > combined_SISTR_result.csv
+
+awk '!seen[$0]++' combined_SISTR_result.csv > combined_SISTR_result_no_duplicates.csv
+
+
+
+#Call sequence types (Using MLST)
+
+$HOME/mlst/bin/mlst --csv *  > mlst_20240124.csv
+
+
+
+#Call AMRs (Using Abricate)
+
+abricate --db resfinder Genomes/* > abricate_output_resfinder_20240119.csv
+
+
